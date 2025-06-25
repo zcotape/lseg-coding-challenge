@@ -43,8 +43,9 @@ def fetch_instance_metadata_api(metadata_token: str, category: str = None) -> st
     """Fetch the EC2 instance metadata API.
 
     Args:
-        url (str): The URL to fetch metadata from.
         metadata_token (str): The instance metadata token.
+        category (str, optional): The specific metadata category to fetch.
+            If not provided, all metadata will be fetched.
 
     Returns:
         str: The instance metadata as a string.
