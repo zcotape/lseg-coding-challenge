@@ -1,5 +1,5 @@
 """
-This script will fetch AWS EC2 instance metadata using the IMDSv2 API.
+This script will fetch AWS EC2 instance metadata.
 """
 import argparse
 import json
@@ -12,7 +12,7 @@ def get_instance_metadata_token(
     ttl_seconds: int = 300,
     request_timeout: int = 10
 ) -> str:
-    """Create a token for accessing the EC2 instance metadata service (IMDSv2).
+    """Create a token for accessing the EC2 instance metadata service.
 
     Args:
         ttl_seconds (int): The time-to-live for the token in seconds.
@@ -40,7 +40,7 @@ def get_instance_metadata_token(
 
 
 def fetch_instance_metadata_api(metadata_token: str, category: str = None) -> str:
-    """Fetch the EC2 instance metadata using the IMDSv2 API.
+    """Fetch the EC2 instance metadata API.
 
     Args:
         url (str): The URL to fetch metadata from.
@@ -102,7 +102,7 @@ def get_instance_metadata(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Fetch AWS EC2 instance metadata using the IMDSv2 API."
+        description="Get the AWS EC2 instance metadata."
     )
     parser.add_argument(
         "--category",
