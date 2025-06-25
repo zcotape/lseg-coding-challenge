@@ -39,13 +39,19 @@ def get_instance_metadata_token(
         sys.exit(1)
 
 
-def fetch_instance_metadata_api(metadata_token: str, category: str = None) -> str:
+def fetch_instance_metadata_api(
+    metadata_token: str,
+    category: str = None,
+    request_timeout: int = 10
+) -> str:
     """Fetch the EC2 instance metadata API.
 
     Args:
         metadata_token (str): The instance metadata token.
         category (str, optional): The specific metadata category to fetch.
             If not provided, all metadata will be fetched.
+        request_timeout (int): The timeout for the request in seconds.
+            Default is 10 seconds.
 
     Returns:
         str: The instance metadata as a string.
@@ -60,7 +66,7 @@ def fetch_instance_metadata_api(metadata_token: str, category: str = None) -> st
         response = requests.get(
             url=url,
             headers=headers,
-            timeout=10
+            timeout=request_timeout
         )
         response.raise_for_status()
         return response.text
