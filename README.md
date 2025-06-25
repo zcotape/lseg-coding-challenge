@@ -5,7 +5,7 @@ Query the metadata of an instance within AWS and provide a JSON formatted output
 ## Pre-requisites
 
 ```text
-pip install dependencies/requirements.txt
+$ pip install dependencies/requirements.txt
 ```
 
 ## Usage
