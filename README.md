@@ -2,7 +2,12 @@
 
 Query the metadata of an instance within AWS and provide a JSON formatted output.
 
-## Pre-requisites
+## Prerequisites
+
+- Python 3.8 or greater
+- [requets](https://github.com/psf/requests)
+
+Or you can install dependencies with a provided requirements file:
 
 ```text
 pip install dependencies/requirements.txt
