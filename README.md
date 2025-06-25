@@ -19,7 +19,7 @@ pip install dependencies/requirements.txt
 $ python get_instance_metadata.py --help
 usage: get_instance_metadata.py [-h] [--category CATEGORY]
 
-Fetch AWS EC2 instance metadata using the IMDSv2 API.
+Get the AWS EC2 instance metadata.
 
 options:
   -h, --help           show this help message and exit
