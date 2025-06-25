@@ -1,4 +1,4 @@
-# LSEG Code Challenge
+# LSEG Coding Challenge
 
 Query the metadata of an instance within AWS and provide a JSON formatted output.
 
