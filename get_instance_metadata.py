@@ -41,7 +41,7 @@ def get_instance_metadata_token(
 
 def fetch_instance_metadata_api(
     metadata_token: str,
-    category: str = None,
+    category: str = "",
     request_timeout: int = 10
 ) -> str:
     """Fetch the EC2 instance metadata API.
@@ -56,9 +56,9 @@ def fetch_instance_metadata_api(
     Returns:
         str: The instance metadata as a string.
     """
-    url = "http://169.254.169.254/latest/meta-data"
+    url = "http://169.254.169.254/latest/meta-data/"
     if category:
-        url = f"{url}/{category}"
+        url = url + category
 
     headers = {"X-aws-ec2-metadata-token": metadata_token}
 
@@ -69,7 +69,7 @@ def fetch_instance_metadata_api(
             timeout=request_timeout
         )
         response.raise_for_status()
-        return response.text
+        return response.text.strip()
     except requests.RequestException as e:
         print(f"Could not fetch instance metadata with error: {e}")
         sys.exit(1)
@@ -77,7 +77,7 @@ def fetch_instance_metadata_api(
 
 def get_instance_metadata(
     metadata_token: str,
-    category: str = None,
+    category: str = "",
 ) -> dict[str, str | list[str] | dict[str, str]]:
     """Get the instance metadata.
 
@@ -89,22 +89,48 @@ def get_instance_metadata(
     Returns:
         dict[str, str | list[str] | dict[str, str]]: The instance metadata.
     """
-    if not category:
-        metadata_response = fetch_instance_metadata_api(
-            metadata_token=metadata_token
-        )
-        return json.dumps({"categories": metadata_response.splitlines()})
-
     metadata_response = fetch_instance_metadata_api(
         metadata_token=metadata_token,
         category=category
     )
-    if "\n" in metadata_response:
-        try:
-            metadata_response = json.loads(metadata_response)
-        except json.JSONDecodeError:
-            return json.dumps({category: metadata_response.splitlines()})
-    return json.dumps({category: metadata_response})
+
+    categories = metadata_response.split("\n")
+    is_category_path = (
+        metadata_response.endswith("/") or category.endswith("/")
+    )
+
+    if len(categories) > 1 or is_category_path:
+        metadata = {}
+        if category and not category.endswith("/"):
+            prefix = f"{category}/"
+        else:
+            prefix = category
+
+        for item in categories:
+            sub_category = f"{prefix}{item}"
+            if item.endswith("/"):
+                metadata[item.rstrip("/")] = get_instance_metadata(
+                    metadata_token=metadata_token,
+                    category=sub_category
+                )
+            else:
+                if sub_category.startswith("public-keys/"):
+                    public_key_id = item.split("=")[0]
+                    metadata[public_key_id] = fetch_instance_metadata_api(
+                        metadata_token=metadata_token,
+                        category=f"public-keys/{public_key_id}/openssh-key"
+                    )
+                else:
+                    metadata_value = fetch_instance_metadata_api(
+                        metadata_token=metadata_token,
+                        category=sub_category
+                    )
+                    try:
+                        metadata[item] = json.loads(metadata_value)
+                    except json.JSONDecodeError:
+                        metadata[item] = metadata_value
+        return metadata
+    return {category: metadata_response}
 
 
 if __name__ == "__main__":
@@ -114,6 +140,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--category",
         type=str,
+        default="",
         help=(
             "The specific metadata category to fetch. If not provided, "
             "all metadata categories will be fetched."
@@ -126,4 +153,4 @@ if __name__ == "__main__":
         metadata_token=token,
         category=args.category
     )
-    print(result)
+    print(json.dumps(result, indent=2))
