@@ -2,6 +2,8 @@
 
 Query the metadata of an instance within AWS and provide a JSON formatted output.
 
+**Bonus Points**: The code allows for a particular data key to be retrieved individually
+
 ## Prerequisites
 
 - Python 3.8 or greater
