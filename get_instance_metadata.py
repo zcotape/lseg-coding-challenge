@@ -93,7 +93,7 @@ def get_instance_metadata(
         metadata_response = fetch_instance_metadata_api(
             metadata_token=metadata_token
         )
-        return {"categories": metadata_response.splitlines()}
+        return json.dumps({"categories": metadata_response.splitlines()})
 
     metadata_response = fetch_instance_metadata_api(
         metadata_token=metadata_token,
@@ -103,8 +103,8 @@ def get_instance_metadata(
         try:
             metadata_response = json.loads(metadata_response)
         except json.JSONDecodeError:
-            return {category: metadata_response.splitlines()}
-    return {category: metadata_response}
+            return json.dumps({category: metadata_response.splitlines()})
+    return json.dumps({category: metadata_response})
 
 
 if __name__ == "__main__":
